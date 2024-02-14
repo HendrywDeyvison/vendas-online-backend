@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'User' })
+@Entity({ name: 'user' })
 export class UserEntity {
   @PrimaryGeneratedColumn('rowid')
   id: number;
@@ -11,21 +11,21 @@ export class UserEntity {
   @Column({ name: 'email', nullable: false })
   email: string;
 
+  @Column({ name: 'cpf', nullable: false })
+  cpf: string;
+
   @Column({ name: 'phone' })
   phone: string;
 
-  @Column({ name: 'typeUser' })
+  @Column({ name: 'type_user' })
   typeUser: number;
-
-  @Column({ name: 'cpf_cnpj', nullable: false })
-  cpf_cnpj: string;
 
   @Column({ name: 'password', nullable: false })
   password: string;
 
-  @Column({ name: 'createdAt', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ name: 'created_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ name: 'updatedAt', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ name: 'updated_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 }
