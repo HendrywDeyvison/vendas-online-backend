@@ -8,8 +8,13 @@ export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
   @Get('/')
-  async getUsers(): Promise<AddressEntity[]> {
+  async getAllAddress(): Promise<AddressEntity[]> {
     return this.addressService.getAllAddress();
+  }
+
+  @Get('/:addressId')
+  async findAddressById(@Param('addressId') addressId: number): Promise<AddressEntity> {
+    return this.addressService.findAddressById(addressId);
   }
 
   @Post('/:userId')
