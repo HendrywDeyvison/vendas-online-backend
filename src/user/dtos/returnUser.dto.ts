@@ -8,6 +8,7 @@ export class ReturnUserDto {
   phone: string;
   cpf: string;
   password: string;
+  typeUser: number;
   addresses: ReturnAddressDto[];
 
   constructor(userEntity: UserEntity) {
@@ -17,6 +18,7 @@ export class ReturnUserDto {
     this.phone = userEntity.phone;
     this.cpf = userEntity.cpf;
     this.password = userEntity.password;
+    this.typeUser = userEntity.typeUser;
 
     this.addresses = userEntity.addresses
       ? userEntity.addresses.map((address) => new ReturnAddressDto(address))
