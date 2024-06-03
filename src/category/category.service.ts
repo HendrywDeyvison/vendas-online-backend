@@ -14,11 +14,21 @@ export class CategoryService {
   async findAllCategories(): Promise<CategoryEntity[]> {
     const categories = await this.categoryRepository.find();
 
-    if (!categories?.length) {
+    if (!categories || !categories?.length) {
       throw new NotFoundException('Categories empty');
     }
 
     return categories;
+  }
+
+  async findCategoryById(id: number): Promise<CategoryEntity> {
+    const category = await this.categoryRepository.findOne({ where: { id } });
+
+    if (!category) {
+      throw new NotFoundException(`Category id: ${id} not found`);
+    }
+
+    return category;
   }
 
   async findCategoryByName(name: string): Promise<CategoryEntity> {
