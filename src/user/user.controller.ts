@@ -23,12 +23,14 @@ import { UpdatePasswordByAdminDTO } from './dtos/update-password-by-admin.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Roles(UserType.User, UserType.Admin)
   @UsePipes(ValidationPipe)
   @Post()
   async createUser(@Body() dataUser: CreateUserDto): Promise<UserEntity> {
     return this.userService.createUser(dataUser);
   }
 
+  @Roles(UserType.Admin)
   @Get()
   async getAllUsers(): Promise<ReturnUserDto[]> {
     return (await this.userService.getAllUsers()).map(
@@ -41,6 +43,7 @@ export class UserController {
     return new ReturnUserDto(await this.userService.getUserByIdUsingRelations(userId));
   }
 
+  @Roles(UserType.User, UserType.Admin)
   @UsePipes(ValidationPipe)
   @Patch()
   async updatePasswordUser(
