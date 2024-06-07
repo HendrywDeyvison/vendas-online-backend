@@ -9,6 +9,6 @@ export class ReturnProductDTO {
     this.id = productEntity.id;
     this.name = productEntity.name;
     this.price = productEntity.price;
-    this.name = productEntity.image;
+    this.image = productEntity.image;
   }
 }
