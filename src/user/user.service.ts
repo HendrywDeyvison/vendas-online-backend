@@ -1,10 +1,12 @@
+import { UpdatePasswordDTO } from './dtos/uptate-password.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from './entities/user.entity';
-import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserType } from './enum/user-type.enum';
+import { createPasswordHashed, validatePassword } from '../utils/password';
+import { UpdatePasswordByAdminDTO } from './dtos/update-password-by-admin.dto';
 
 @Injectable()
 export class UserService {
@@ -20,8 +22,7 @@ export class UserService {
       throw new BadRequestException(`Email already existing in the system`);
     }
 
-    const saltOrRounds = 10;
-    const hashedPassword = await bcrypt.hash(createUserDto.password, saltOrRounds);
+    const hashedPassword = await createPasswordHashed(createUserDto.password);
 
     return this.userRepository.save({
       ...createUserDto,
@@ -69,5 +70,38 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async updatePasswordUser(
+    updatePasswordDTO: UpdatePasswordDTO,
+    userId: number,
+  ): Promise<UserEntity> {
+    const user = await this.findUserById(userId);
+
+    const hashedPassword = await createPasswordHashed(updatePasswordDTO.newPassword);
+
+    const isMatch = await validatePassword(updatePasswordDTO.oldPassword, user.password);
+
+    if (!isMatch) {
+      throw new BadRequestException('Invalid old password');
+    }
+
+    return this.userRepository.save({
+      ...user,
+      password: hashedPassword,
+    });
+  }
+
+  async updatePasswordUserByAdmin(
+    updatePasswordByAdminDTO: UpdatePasswordByAdminDTO,
+  ): Promise<UserEntity> {
+    const user = await this.findUserById(updatePasswordByAdminDTO.userId);
+
+    const hashedPassword = await createPasswordHashed(updatePasswordByAdminDTO.newPassword);
+
+    return this.userRepository.save({
+      ...user,
+      password: hashedPassword,
+    });
   }
 }
