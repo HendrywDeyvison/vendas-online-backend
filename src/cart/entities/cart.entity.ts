@@ -18,6 +18,6 @@ export class CartEntity {
   @CreateDateColumn({ name: 'updated_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @OneToMany(() => CartProductEntity, (cartProduct) => cartProduct.cartId)
+  @OneToMany(() => CartProductEntity, (cartProduct) => cartProduct.cart)
   cartProduct?: CartProductEntity[];
 }

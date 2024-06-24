@@ -22,7 +22,7 @@ export class CartProductEntity {
   @Column({ name: 'updated_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @ManyToOne(() => ProductEntity, (productyEntity: ProductEntity) => productyEntity.cartProduct)
+  @ManyToOne(() => ProductEntity, (productEntity: ProductEntity) => productEntity.cartProduct)
   @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
   product?: ProductEntity;
 
