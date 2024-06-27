@@ -1,3 +1,4 @@
+import { UpdateCartDTO } from './dtos/update-cart.dto';
 import { ProductService } from './../product/product.service';
 import { CartProductService } from './../cart-product/cart-product.service';
 import { InsertCartDTO } from './dtos/insert-cart.dto';
@@ -68,6 +69,24 @@ export class CartService {
 
     this.cartProductService.insertProductInCart(insertCartDTO, cart);
     //return this.findCartByUserId(userId, true);
+
+    return cart;
+  }
+
+  async deleteProductCart(productId: number, userId: number): Promise<DeleteResult> {
+    const cart = await this.findCartByUserId(userId);
+
+    return this.cartProductService.deleteProductCart(productId, cart.id);
+  }
+
+  async updateProductInCart(updateCartDTO: UpdateCartDTO, userId: number): Promise<CartEntity> {
+    await this.productService.findProductById(updateCartDTO.productId);
+
+    const cart = await this.findCartByUserId(userId).catch(() => {
+      return this.createCart(userId);
+    });
+
+    this.cartProductService.updateProductInCart(updateCartDTO, cart);
 
     return cart;
   }
