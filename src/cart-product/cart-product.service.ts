@@ -44,6 +44,8 @@ export class CartProductService {
     insertCartDTO: InsertCartDTO,
     cart: CartEntity,
   ): Promise<CartProductEntity> {
+    await this.productService.findProductById(insertCartDTO.productId);
+
     const cartProduct = await this.verifyProductInCart(insertCartDTO.productId, cart.id).catch(
       () => undefined,
     );
