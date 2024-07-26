@@ -11,4 +11,5 @@ export const addressMock: AddressEntity = {
   cityId: cityMock.id,
   createdAt: new Date(),
   updatedAt: new Date(),
+  orders: [],
 };

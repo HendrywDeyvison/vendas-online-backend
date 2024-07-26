@@ -1,4 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { OrderProductEntity } from './../../order-product/entities/order-product.entity';
+import { PaymentEntity } from 'src/payment/entities/payment.entity';
+import { AddressEntity } from './../../address/entities/address.entity';
+import { UserEntity } from './../../user/entities/user.entity';
+import { Column, Entity, JoinColumn, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'order' })
 export class OrderEntity {
@@ -22,4 +26,19 @@ export class OrderEntity {
 
   @Column({ name: 'updated_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @ManyToMany(() => UserEntity, (user) => user.orders)
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+  user?: UserEntity;
+
+  @ManyToMany(() => AddressEntity, (address) => address.orders)
+  @JoinColumn({ name: 'address_id', referencedColumnName: 'id' })
+  address?: AddressEntity;
+
+  @ManyToMany(() => PaymentEntity, (payment) => payment.orders)
+  @JoinColumn({ name: 'payment_id', referencedColumnName: 'id' })
+  payment?: PaymentEntity;
+
+  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.order)
+  ordersProduct?: OrderProductEntity[];
 }
