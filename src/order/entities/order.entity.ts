@@ -1,5 +1,5 @@
 import { OrderProductEntity } from './../../order-product/entities/order-product.entity';
-import { PaymentEntity } from 'src/payment/entities/payment.entity';
+import { PaymentEntity } from '../../payment/entities/payment.entity';
 import { AddressEntity } from './../../address/entities/address.entity';
 import { UserEntity } from './../../user/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';

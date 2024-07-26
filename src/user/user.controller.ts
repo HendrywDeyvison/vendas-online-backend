@@ -15,7 +15,7 @@ import { UserEntity } from './entities/user.entity';
 import { Roles } from '../decorators/roles.decorator';
 import { UserType } from './enum/user-type.enum';
 import { UpdatePasswordDTO } from './dtos/uptate-password.dto';
-import { UserId } from 'src/decorators/user-id-decorator';
+import { UserId } from '../decorators/user-id-decorator';
 import { UpdatePasswordByAdminDTO } from './dtos/update-password-by-admin.dto';
 
 @Roles(UserType.User, UserType.Admin)
