@@ -1,3 +1,4 @@
+import { ProductService } from './../product/product.service';
 import { OrderProductService } from './../order-product/order-product.service';
 import { CartService } from './../cart/cart.service';
 import { PaymentService } from './../payment/payment.service';
@@ -16,9 +17,14 @@ export class OrderService {
     private readonly paymentService: PaymentService,
     private readonly cartService: CartService,
     private readonly orderProductService: OrderProductService,
+    private readonly productService: ProductService,
   ) {}
 
-  async createOrder(createOrderDTO: CreateOrderDTO, cartId: number, userId: number) {
+  async createOrder(
+    createOrderDTO: CreateOrderDTO,
+    cartId: number,
+    userId: number,
+  ): Promise<OrderEntity> {
     const payment: PaymentEntity = await this.paymentService.createPayment(createOrderDTO);
 
     const order = await this.orderRepository.save({
@@ -30,15 +36,21 @@ export class OrderService {
 
     const cart = await this.cartService.findCartByUserId(userId, true);
 
-    cart.cartProduct?.forEach((cartProduct) => {
-      this.orderProductService.createOrderProduct({
-        orderId: order.id,
-        productId: cartProduct.productId,
-        price: 0,
-        amount: cartProduct.amount,
-      });
-    });
+    const products = await this.productService.findAllProducts(
+      cart.cartProduct?.map((cartProduct) => cartProduct.productId),
+    );
 
-    return { cartId, cart, payment, order };
+    await Promise.all(
+      cart.cartProduct?.map((cartProduct) => {
+        this.orderProductService.createOrderProduct({
+          orderId: order.id,
+          productId: cartProduct.productId,
+          price: products.find((product) => product.id == cartProduct.productId)?.price || 0,
+          amount: cartProduct.amount,
+        });
+      }),
+    );
+
+    return order;
   }
 }
