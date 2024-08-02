@@ -21,13 +21,25 @@ export class ProductService {
     return this.productRepository.save({ ...createProduct });
   }
 
-  async findAllProducts(productId?: number[]): Promise<ProductEntity[]> {
+  async findAllProducts(
+    productId?: number[],
+    isFindRelations: boolean = false,
+  ): Promise<ProductEntity[]> {
     let findOptions = {};
 
     if (productId && productId?.length > 0) {
       findOptions = {
         where: {
           id: In(productId),
+        },
+      };
+    }
+
+    if (isFindRelations) {
+      findOptions = {
+        ...findOptions,
+        relations: {
+          category: true,
         },
       };
     }
@@ -44,6 +56,9 @@ export class ProductService {
   async findProductById(productId: number): Promise<ProductEntity> {
     const product = await this.productRepository.findOne({
       where: { id: productId },
+      relations: {
+        category: true,
+      },
     });
 
     if (!product) {
