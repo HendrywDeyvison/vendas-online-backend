@@ -1,14 +1,25 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ProductService } from './../product/product.service';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryEntity } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import { CreateCategory } from './dtos/create-category.dto';
+import { ReturnCategoryDto } from './dtos/return-category.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(CategoryEntity)
     private readonly categoryRepository: Repository<CategoryEntity>,
+
+    @Inject(forwardRef(() => ProductService))
+    private readonly productService: ProductService,
   ) {}
 
   async findAllCategories(): Promise<CategoryEntity[]> {
@@ -21,14 +32,15 @@ export class CategoryService {
     return categories;
   }
 
-  async findCategoryById(id: number): Promise<CategoryEntity> {
+  async findCategoryById(id: number): Promise<ReturnCategoryDto> {
     const category = await this.categoryRepository.findOne({ where: { id } });
+    const amountProducts = await this.productService.amountProductByCategoryId(id);
 
     if (!category) {
       throw new NotFoundException(`Category id: ${id} not found`);
     }
 
-    return category;
+    return new ReturnCategoryDto(category, amountProducts.total);
   }
 
   async findCategoryByName(name: string): Promise<CategoryEntity> {

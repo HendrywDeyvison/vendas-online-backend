@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UsePipes } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { ReturnCategoryDto } from './dtos/return-category.dto';
 import { Roles } from '../decorators/roles.decorator';
@@ -16,6 +16,11 @@ export class CategoryController {
     return (await this.categoryService.findAllCategories()).map(
       (category) => new ReturnCategoryDto(category),
     );
+  }
+
+  @Get('/:categoryId')
+  async findCategoryById(@Param('categoryId') categoryId: number): Promise<ReturnCategoryDto> {
+    return this.categoryService.findCategoryById(categoryId);
   }
 
   @Roles(UserType.Admin)
