@@ -1,3 +1,4 @@
+import { ReturnOrderDTO } from './dtos/return-order.dto';
 import { OrderProductEntity } from './../order-product/entities/order-product.entity';
 import { ProductEntity } from './../product/entities/product.entity';
 import { CartEntity } from './../cart/entities/cart.entity';
@@ -75,6 +76,22 @@ export class OrderService {
     return order;
   }
 
+  async findAllOrders(): Promise<ReturnOrderDTO[]> {
+    const orders = (
+      await this.orderRepository.find({
+        relations: {
+          user: true,
+        },
+      })
+    ).map((order) => new ReturnOrderDTO(order));
+
+    if (!orders?.length) {
+      throw new NotFoundException('Orders not found');
+    }
+
+    return orders;
+  }
+
   async findOrdersByUserId(userId: number): Promise<OrderEntity[]> {
     const orders = await this.orderRepository.find({
       where: { userId },
@@ -90,7 +107,7 @@ export class OrderService {
     });
 
     if (!orders?.length) {
-      throw new NotFoundException('no order found');
+      throw new NotFoundException('Order not found');
     }
 
     return orders;

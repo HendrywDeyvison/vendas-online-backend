@@ -55,16 +55,16 @@ export class ProductService {
     return products;
   }
 
-  async findProductById(productId: number): Promise<ProductEntity> {
+  async findProductById(id: number, isFindRelations: boolean = true): Promise<ProductEntity> {
     const product = await this.productRepository.findOne({
-      where: { id: productId },
+      where: { id },
       relations: {
-        category: true,
+        category: isFindRelations,
       },
     });
 
     if (!product) {
-      throw new NotFoundException(`Product id: ${productId} not found`);
+      throw new NotFoundException(`Product id: ${id} not found`);
     }
 
     return product;
@@ -77,23 +77,22 @@ export class ProductService {
   }
 
   async updateProduct(updateProduct: UpdateProductDTO, productId: number): Promise<ProductEntity> {
-    const product = await this.findProductById(productId);
+    const product = await this.findProductById(productId, false);
 
     return this.productRepository.save({
       ...product,
       ...updateProduct,
     });
   }
-  //!COLOCAR ESSA FUNCAO NO SERVICE DE CATEGORY
+
   async amountProductByCategoryId(categoryId?: number): Promise<ReturnAmountProductDto> {
     const amountProduct = await this.productRepository
       .createQueryBuilder('product')
-      .select('product.categoryId', 'categoryId')
-      .addSelect('COUNT(product.id)', 'productCount')
-      .where('product.categoryId = :categoryId', { categoryId })
+      .select('product.category_id, COUNT(product.id) as total')
+      .where('product.category_id = :categoryId', { categoryId })
       .groupBy('product.categoryId')
       .getRawOne();
 
-    return new ReturnAmountProductDto(amountProduct);
+    return amountProduct;
   }
 }

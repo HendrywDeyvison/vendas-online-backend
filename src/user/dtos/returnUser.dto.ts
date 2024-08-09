@@ -7,9 +7,9 @@ export class ReturnUserDto {
   email: string;
   phone: string;
   cpf: string;
-  password: string;
-  typeUser: number;
-  addresses: ReturnAddressDto[];
+  // password: string;
+  // typeUser: number;
+  addresses?: ReturnAddressDto[];
 
   constructor(userEntity: UserEntity) {
     this.id = userEntity.id;
@@ -17,11 +17,10 @@ export class ReturnUserDto {
     this.email = userEntity.email;
     this.phone = userEntity.phone;
     this.cpf = userEntity.cpf;
-    this.password = userEntity.password;
-    this.typeUser = userEntity.typeUser;
+    //this.password = userEntity.password;
+    //this.typeUser = userEntity.typeUser;
 
-    this.addresses = userEntity.addresses
-      ? userEntity.addresses.map((address) => new ReturnAddressDto(address))
-      : undefined;
+    this.addresses =
+      userEntity.addresses && userEntity.addresses.map((address) => new ReturnAddressDto(address));
   }
 }

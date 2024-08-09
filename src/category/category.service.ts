@@ -22,25 +22,37 @@ export class CategoryService {
     private readonly productService: ProductService,
   ) {}
 
-  async findAllCategories(): Promise<CategoryEntity[]> {
-    const categories = await this.categoryRepository.find();
+  async findAllCategories(): Promise<ReturnCategoryDto[]> {
+    const categories = await this.categoryRepository.find({
+      relations: ['products'],
+    });
 
     if (!categories || !categories?.length) {
       throw new NotFoundException('Categories empty');
     }
 
-    return categories;
+    const categoryWithCounts = await Promise.all(
+      categories.map(async (category) => {
+        const amountProducts = await this.productService.amountProductByCategoryId(category.id);
+        return new ReturnCategoryDto(category, amountProducts?.total);
+      }),
+    );
+
+    return categoryWithCounts;
   }
 
   async findCategoryById(id: number): Promise<ReturnCategoryDto> {
-    const category = await this.categoryRepository.findOne({ where: { id } });
+    const category = await this.categoryRepository.findOne({
+      where: { id },
+      relations: ['products'],
+    });
     const amountProducts = await this.productService.amountProductByCategoryId(id);
 
     if (!category) {
       throw new NotFoundException(`Category id: ${id} not found`);
     }
 
-    return new ReturnCategoryDto(category, amountProducts.total);
+    return new ReturnCategoryDto(category, amountProducts?.total);
   }
 
   async findCategoryByName(name: string): Promise<CategoryEntity> {
