@@ -7,6 +7,7 @@ import { OrderEntity } from './../entities/order.entity';
 export class ReturnOrderDTO {
   id: number;
   date: Date;
+  amountProducts?: number;
   user?: ReturnUserDto;
   address?: ReturnAddressDto;
   payment?: ReturnPaymentDto;
@@ -21,5 +22,6 @@ export class ReturnOrderDTO {
     this.ordersProduct =
       order.ordersProduct &&
       order.ordersProduct.map((orderProduct) => new ReturnOrderProductDto(orderProduct));
+    this.amountProducts = order.ordersProduct && order.ordersProduct.length;
   }
 }
