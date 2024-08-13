@@ -92,19 +92,22 @@ export class OrderService {
     return orders;
   }
 
-  async findOrdersByUserId(userId: number): Promise<OrderEntity[]> {
-    const orders = await this.orderRepository.find({
-      where: { userId },
-      relations: {
-        address: true,
-        ordersProduct: {
-          product: true,
+  async findOrdersByUserId(userId?: number, orderId?: number): Promise<ReturnOrderDTO[]> {
+    const orders = (
+      await this.orderRepository.find({
+        where: { userId, id: orderId },
+        relations: {
+          address: true,
+          ordersProduct: {
+            product: true,
+          },
+          payment: {
+            paymentStatus: true,
+          },
+          user: !!orderId,
         },
-        payment: {
-          paymentStatus: true,
-        },
-      },
-    });
+      })
+    ).map((order) => new ReturnOrderDTO(order));
 
     if (!orders?.length) {
       throw new NotFoundException('Order not found');
