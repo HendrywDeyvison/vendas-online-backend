@@ -1,3 +1,4 @@
+import { OrderModule } from './../order/order.module';
 import { CityModule } from './../city/city.module';
 import { Module } from '@nestjs/common';
 import { CorreiosService } from './correios.service';
@@ -11,6 +12,7 @@ import { HttpModule } from '@nestjs/axios';
       maxRedirects: 5,
     }),
     CityModule,
+    OrderModule,
   ],
   providers: [CorreiosService],
   controllers: [CorreiosController],

@@ -97,7 +97,11 @@ export class OrderService {
       await this.orderRepository.find({
         where: { userId, id: orderId },
         relations: {
-          address: true,
+          address: {
+            city: {
+              state: true,
+            },
+          },
           ordersProduct: {
             product: true,
           },
