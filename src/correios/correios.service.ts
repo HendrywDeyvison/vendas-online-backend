@@ -1,3 +1,4 @@
+import { ReturnCepDto } from './dtos/return-cep.dto';
 import { CityService } from './../city/city.service';
 import { ReturnExternalCepDto } from './dtos/return-external-cep.dto';
 import { HttpService } from '@nestjs/axios';
@@ -13,7 +14,7 @@ export class CorreiosService {
 
   URL_CEP = process.env.URL_CEP_CORREIOS; //this.configService.get<string>('URL_CEP_CORREIOS');
 
-  async findAddressByCep(cep: string): Promise<ReturnExternalCepDto> {
+  async findAddressByCep(cep: string): Promise<ReturnCepDto> {
     const returnCep = await this.httpService.axiosRef
       .get<ReturnExternalCepDto>(this.URL_CEP.replace('{CEP}', cep))
       .then((resp) => {
@@ -29,9 +30,10 @@ export class CorreiosService {
         throw new BadRequestException(`Error  in connection request ${error.message}`);
       });
 
-    const city = await this.cityService.findCityByName(returnCep.localidade, returnCep.uf);
+    const city = await this.cityService
+      .findCityByName(returnCep.localidade, returnCep.uf)
+      .catch(() => undefined);
 
-    console.log('CITY: ', city);
-    return returnCep;
+    return new ReturnCepDto(returnCep, city?.id, city?.stateId);
   }
 }

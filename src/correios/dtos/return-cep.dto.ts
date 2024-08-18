@@ -5,7 +5,7 @@ export class ReturnCepDto {
   complement: string;
   neighborhood: string;
   city: string;
-  state: string;
+  uf: string;
   ibge: string;
   ddd: string;
   cityId?: number;
@@ -17,7 +17,7 @@ export class ReturnCepDto {
     this.complement = returnCep.complemento;
     this.neighborhood = returnCep.bairro;
     this.city = returnCep.localidade;
-    this.state = returnCep.uf;
+    this.uf = returnCep.uf;
     this.ibge = returnCep.ibge;
     this.ddd = returnCep.ddd;
     this.cityId = cityId;
