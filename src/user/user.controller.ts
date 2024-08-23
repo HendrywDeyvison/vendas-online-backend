@@ -18,19 +18,26 @@ import { UpdatePasswordDTO } from './dtos/uptate-password.dto';
 import { UserId } from '../decorators/user-id-decorator';
 import { UpdatePasswordByAdminDTO } from './dtos/update-password-by-admin.dto';
 
-@Roles(UserType.User, UserType.Admin)
+@Roles(UserType.User, UserType.Admin, UserType.Root)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Roles(UserType.User, UserType.Admin)
+  @Roles(UserType.Root)
+  @UsePipes(ValidationPipe)
+  @Post('/byAdmin')
+  async createAdmin(@Body() dataUser: CreateUserDto): Promise<UserEntity> {
+    return this.userService.createUser(dataUser, UserType.Admin);
+  }
+
+  @Roles(UserType.User, UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
   @Post()
   async createUser(@Body() dataUser: CreateUserDto): Promise<UserEntity> {
     return this.userService.createUser(dataUser);
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @Get('/all')
   async getAllUsers(): Promise<ReturnUserDto[]> {
     return (await this.userService.getAllUsers()).map(
@@ -43,7 +50,7 @@ export class UserController {
     return new ReturnUserDto(await this.userService.getUserByIdUsingRelations(userId));
   }
 
-  @Roles(UserType.User, UserType.Admin)
+  @Roles(UserType.User, UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
   @Patch()
   async updatePasswordUser(
@@ -53,9 +60,9 @@ export class UserController {
     return new ReturnUserDto(await this.userService.updatePasswordUser(updatePassword, userId));
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
-  @Patch('/byadmin')
+  @Patch('/byAdmin')
   async updatePasswordUserByAdmin(
     @Body() updatePasswordByAdminDTO: UpdatePasswordByAdminDTO,
   ): Promise<ReturnUserDto> {
@@ -64,7 +71,7 @@ export class UserController {
     );
   }
 
-  @Roles(UserType.Admin, UserType.User)
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get('')
   async getInfoUser(@UserId() userId: number): Promise<ReturnUserDto> {
     return new ReturnUserDto(await this.userService.getUserByIdUsingRelations(userId));

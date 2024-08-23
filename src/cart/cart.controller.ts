@@ -18,7 +18,7 @@ import { CartService } from './cart.service';
 import { DeleteResult } from 'typeorm';
 import { UpdateCartDTO } from './dtos/update-cart.dto';
 
-@Roles(UserType.Admin, UserType.User)
+@Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}

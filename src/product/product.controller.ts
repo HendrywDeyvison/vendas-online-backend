@@ -18,7 +18,7 @@ import { CreateProductDTO } from './dtos/create-product.dto';
 import { DeleteResult } from 'typeorm';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 
-@Roles(UserType.Admin, UserType.User)
+@Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -35,20 +35,20 @@ export class ProductController {
     return new ReturnProductDTO(await this.productService.findProductById(productId));
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
   @Post()
   async createProduct(@Body() createProductDTO: CreateProductDTO): Promise<ProductEntity> {
     return await this.productService.createProduct(createProductDTO);
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @Delete('/:productId')
   async deleteProduct(@Param('productId') productId: number): Promise<DeleteResult> {
     return await this.productService.deleteProduct(productId);
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
   @Put('/:productId')
   async updateProduct(
