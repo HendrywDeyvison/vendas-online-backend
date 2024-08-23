@@ -11,10 +11,10 @@ export class SizeProduct {
 
   constructor(product: ReturnProductDTO, amount: number) {
     this.id = String(product.id);
-    this.width = 16;
-    this.height = 25;
-    this.length = 11;
-    this.weight = 0.3;
+    this.width = product.width;
+    this.height = product.height;
+    this.length = product.length;
+    this.weight = product.weight;
     this.insurance_value = product.price;
     this.quantity = amount;
   }

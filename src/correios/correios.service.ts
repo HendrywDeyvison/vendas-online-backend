@@ -1,6 +1,5 @@
 import { ReturnOrderDTO } from './../order/dtos/return-order.dto';
 import { OrderService } from './../order/order.service';
-import { ProductService } from './../product/product.service';
 import { SizeProduct } from './dtos/size-product.dto';
 import { ReturnCepDto } from './dtos/return-cep.dto';
 import { CityService } from './../city/city.service';
@@ -67,6 +66,8 @@ export class CorreiosService {
       },
       products,
     };
+
+    console.log('TESTE: ', products);
 
     return this.httpService.axiosRef
       .post(this.URL_DELIVERY_PRICE, data, this.CONFIG_AXIOS)

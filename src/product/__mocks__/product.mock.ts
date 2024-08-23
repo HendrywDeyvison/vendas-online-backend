@@ -7,6 +7,11 @@ export const productMock: ProductEntity = {
   categoryId: categoryMock.id,
   price: 123.12,
   image: 'http://image.com',
+  width: 16,
+  height: 25,
+  length: 11,
+  weight: 0.3,
+  diameter: 2,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
