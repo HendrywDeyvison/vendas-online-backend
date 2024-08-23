@@ -22,9 +22,13 @@ export class CategoryService {
     private readonly productService: ProductService,
   ) {}
 
-  async findAllCategories(): Promise<ReturnCategoryDto[]> {
+  async findAllCategories(isRelations: boolean = false): Promise<ReturnCategoryDto[]> {
+    const relations = {
+      products: isRelations ? true : false,
+    };
+
     const categories = await this.categoryRepository.find({
-      relations: ['products'],
+      relations,
     });
 
     if (!categories || !categories?.length) {
@@ -73,5 +77,17 @@ export class CategoryService {
     }
 
     return await this.categoryRepository.save(createCategory);
+  }
+
+  async deleteCategory(categoryId: number): Promise<ReturnCategoryDto> {
+    const category = await this.findCategoryById(categoryId);
+
+    if (category.products?.length > 0) {
+      throw new BadRequestException(`Category id: ${categoryId} has products`);
+    }
+
+    return new ReturnCategoryDto(
+      await this.categoryRepository.save({ ...category, active: false }),
+    );
   }
 }

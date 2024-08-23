@@ -15,7 +15,6 @@ import { UserType } from '../user/enum/user-type.enum';
 import { ReturnProductDTO } from './dtos/return-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { CreateProductDTO } from './dtos/create-product.dto';
-import { DeleteResult } from 'typeorm';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 
 @Roles(UserType.Admin, UserType.Root, UserType.User)
@@ -44,7 +43,7 @@ export class ProductController {
 
   @Roles(UserType.Admin, UserType.Root)
   @Delete('/:productId')
-  async deleteProduct(@Param('productId') productId: number): Promise<DeleteResult> {
+  async deleteProduct(@Param('productId') productId: number): Promise<ProductEntity> {
     return await this.productService.deleteProduct(productId);
   }
 

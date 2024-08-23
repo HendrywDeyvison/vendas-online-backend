@@ -70,10 +70,10 @@ export class ProductService {
     return product;
   }
 
-  async deleteProduct(productId: number): Promise<DeleteResult> {
-    await this.findProductById(productId);
+  async deleteProduct(productId: number): Promise<ProductEntity> {
+    const product = await this.findProductById(productId);
 
-    return this.productRepository.delete({ id: productId });
+    return this.productRepository.save({ ...product, active: false });
   }
 
   async updateProduct(updateProduct: UpdateProductDTO, productId: number): Promise<ProductEntity> {

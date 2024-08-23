@@ -41,6 +41,9 @@ export class ProductEntity {
   @Column({ name: 'updated_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
+  @Column({ name: 'active', nullable: false })
+  active: boolean;
+
   @OneToMany(() => CartProductEntity, (cartProduct) => cartProduct.product)
   cartProduct?: CartProductEntity[];
 

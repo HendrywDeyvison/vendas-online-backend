@@ -5,4 +5,5 @@ export const categoryMock: CategoryEntity = {
   name: 'Category 1',
   createdAt: new Date(),
   updatedAt: new Date(),
+  active: true,
 };

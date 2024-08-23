@@ -17,4 +17,7 @@ export class CategoryEntity {
 
   @OneToMany(() => ProductEntity, (product: ProductEntity) => product.category)
   products?: ProductEntity[];
+
+  @Column({ name: 'active', nullable: false })
+  active: boolean;
 }

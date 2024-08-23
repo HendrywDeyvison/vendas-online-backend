@@ -12,6 +12,7 @@ export const productMock: ProductEntity = {
   length: 11,
   weight: 0.3,
   diameter: 2,
+  active: true,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
