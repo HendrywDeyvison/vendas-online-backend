@@ -1,3 +1,4 @@
+import { UpdateCategory } from './dtos/update-category.dto';
 import { ProductService } from './../product/product.service';
 import {
   BadRequestException,
@@ -45,10 +46,13 @@ export class CategoryService {
     return categoryWithCounts;
   }
 
-  async findCategoryById(id: number): Promise<ReturnCategoryDto> {
+  async findCategoryById(id: number, isRelations: boolean = true): Promise<ReturnCategoryDto> {
+    const relations = {
+      products: isRelations ? true : false,
+    };
     const category = await this.categoryRepository.findOne({
       where: { id },
-      relations: ['products'],
+      relations,
     });
     const amountProducts = await this.productService.amountProductByCategoryId(id);
 
@@ -79,6 +83,21 @@ export class CategoryService {
     return await this.categoryRepository.save(createCategory);
   }
 
+  async updateCategory(
+    updateCategory: UpdateCategory,
+    categoryId: number,
+  ): Promise<ReturnCategoryDto> {
+    const category = await this.findCategoryById(categoryId);
+
+    if (!category) {
+      throw new BadRequestException(`Category id: ${categoryId} not found`);
+    }
+
+    return new ReturnCategoryDto(
+      await this.categoryRepository.save({ ...category, ...updateCategory, updatedAt: new Date() }),
+    );
+  }
+
   async deleteCategory(categoryId: number): Promise<ReturnCategoryDto> {
     const category = await this.findCategoryById(categoryId);
 
@@ -87,7 +106,7 @@ export class CategoryService {
     }
 
     return new ReturnCategoryDto(
-      await this.categoryRepository.save({ ...category, active: false }),
+      await this.categoryRepository.save({ ...category, active: false, updatedAt: new Date() }),
     );
   }
 }

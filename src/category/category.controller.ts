@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/common';
+import { UpdateCategory } from './dtos/update-category.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { ReturnCategoryDto } from './dtos/return-category.dto';
 import { Roles } from '../decorators/roles.decorator';
@@ -22,10 +33,19 @@ export class CategoryController {
   }
 
   @Roles(UserType.Admin, UserType.Root)
-  @UsePipes()
+  @UsePipes(ValidationPipe)
   @Post()
   async createCategory(@Body() createCategory: CreateCategory): Promise<CategoryEntity> {
     return await this.categoryService.createCategory(createCategory);
+  }
+
+  @UsePipes(ValidationPipe)
+  @Put('/:categoryId')
+  async updateCategory(
+    @Body() updateCategory: UpdateCategory,
+    @Param('categoryId') categoryId: number,
+  ): Promise<ReturnCategoryDto> {
+    return this.categoryService.updateCategory(updateCategory, categoryId);
   }
 
   @Delete('/:categoryId')
