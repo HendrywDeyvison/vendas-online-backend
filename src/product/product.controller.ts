@@ -1,3 +1,4 @@
+import { PaginationDto } from 'src/dtos/pagination.dto';
 import {
   Body,
   Controller,
@@ -6,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -22,7 +24,17 @@ import { UpdateProductDTO } from './dtos/update-product.dto';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Get('')
+  @Get()
+  async findAllProductsByParams(
+    @Query('id') productId: number,
+    @Query('name') productName: string,
+    @Query('size') size: number,
+    @Query('page') page: number,
+  ): Promise<PaginationDto<ReturnProductDTO[]>> {
+    return this.productService.findAllProductsByParams(productId, productName, size, page, false);
+  }
+
+  @Get('/all')
   async findAllProducts(): Promise<ReturnProductDTO[]> {
     return (await this.productService.findAllProducts(undefined, true)).map(
       (product) => new ReturnProductDTO(product),

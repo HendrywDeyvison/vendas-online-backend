@@ -2,10 +2,12 @@ import { ReturnAmountProductDto } from './dtos/return-amount-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductEntity } from './entities/product.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { CategoryService } from '../category/category.service';
+import { ReturnProductDTO } from './dtos/return-product.dto';
+import { PaginationDto, PaginationMeta } from 'src/dtos/pagination.dto';
 
 @Injectable()
 export class ProductService {
@@ -16,6 +18,9 @@ export class ProductService {
     @Inject(forwardRef(() => CategoryService))
     private readonly categoryService: CategoryService,
   ) {}
+
+  DEFAULT_PAGE_SIZE = 10;
+  FIRST_PAGE = 0;
 
   async createProduct(createProduct: CreateProductDTO): Promise<ProductEntity> {
     await this.categoryService.findCategoryById(createProduct.categoryId);
@@ -95,5 +100,51 @@ export class ProductService {
       .getRawOne();
 
     return amountProduct;
+  }
+
+  async findAllProductsByParams(
+    productId?: number,
+    productName?: string,
+    size: number = this.DEFAULT_PAGE_SIZE,
+    page: number = this.FIRST_PAGE,
+    isFindRelations: boolean = false,
+  ): Promise<PaginationDto<ReturnProductDTO[]>> {
+    const skip = (page - 1) * size;
+    let findOptions = {};
+
+    if (productId) {
+      findOptions = {
+        where: { id: productId },
+      };
+    }
+
+    if (productName?.length > 0) {
+      findOptions = {
+        where: { name: ILike(`%${productName}%`) },
+      };
+    }
+
+    findOptions = {
+      ...findOptions,
+      order: {
+        id: 'ASC',
+      },
+      take: size,
+      skip,
+      relations: {
+        category: isFindRelations,
+      },
+    };
+
+    const [products, total] = await this.productRepository.findAndCount(findOptions);
+
+    if (!products || !products?.length) {
+      throw new NotFoundException('Not found products');
+    }
+
+    return new PaginationDto(
+      new PaginationMeta(size, total, skip + 1, Math.ceil(total / size)),
+      products.map((product) => new ReturnProductDTO(product)),
+    );
   }
 }
