@@ -5,9 +5,11 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +19,7 @@ import { InsertCartDTO } from './dtos/insert-cart.dto';
 import { CartService } from './cart.service';
 import { DeleteResult } from 'typeorm';
 import { UpdateCartDTO } from './dtos/update-cart.dto';
+import { Response } from 'express';
 
 @Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('cart')
@@ -24,8 +27,22 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Get()
-  async findCartByUserId(@UserId() userId: number): Promise<ReturnCartDTO> {
-    return new ReturnCartDTO(await this.cartService.findCartByUserId(userId, true));
+  async findCartByUserId(
+    @UserId() userId: number,
+    @Res({ passthrough: true }) res?: Response,
+  ): Promise<ReturnCartDTO> {
+    const cart = await this.cartService
+      .findCartByUserId(userId, true)
+      .then((cart) => new ReturnCartDTO(cart))
+      .catch(() => undefined);
+
+    if (cart) {
+      return cart;
+    }
+
+    res.status(HttpStatus.NO_CONTENT).send();
+
+    return;
   }
 
   @UsePipes(ValidationPipe)
