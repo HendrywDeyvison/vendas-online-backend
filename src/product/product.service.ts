@@ -20,7 +20,7 @@ export class ProductService {
   ) {}
 
   DEFAULT_PAGE_SIZE = 10;
-  FIRST_PAGE = 0;
+  FIRST_PAGE = 1;
 
   async createProduct(createProduct: CreateProductDTO): Promise<ProductEntity> {
     await this.categoryService.findCategoryById(createProduct.categoryId);
@@ -109,6 +109,8 @@ export class ProductService {
     page: number = this.FIRST_PAGE,
     isFindRelations: boolean = false,
   ): Promise<PaginationDto<ReturnProductDTO[]>> {
+    page = Number(page) ? page : this.FIRST_PAGE;
+    size = Number(size) ? size : this.DEFAULT_PAGE_SIZE;
     const skip = (page - 1) * size;
     let findOptions = {};
 

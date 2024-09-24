@@ -29,7 +29,7 @@ export class ProductController {
     @Query('id') productId: number,
     @Query('name') productName: string,
     @Query('size') size: number,
-    @Query('page') page: number,
+    @Query('page') page: number = 1,
   ): Promise<PaginationDto<ReturnProductDTO[]>> {
     return this.productService.findAllProductsByParams(productId, productName, size, page, false);
   }
