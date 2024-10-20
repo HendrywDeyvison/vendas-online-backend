@@ -12,6 +12,7 @@ import { OrderEntity } from './entities/order.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationDto, PaginationMeta } from 'src/dtos/pagination.dto';
 
 @Injectable()
 export class OrderService {
@@ -23,6 +24,9 @@ export class OrderService {
     private readonly orderProductService: OrderProductService,
     private readonly productService: ProductService,
   ) {}
+
+  DEFAULT_PAGE_SIZE = 10;
+  FIRST_PAGE = 1;
 
   async saveOrder(
     createOrderDTO: CreateOrderDTO,
@@ -76,20 +80,38 @@ export class OrderService {
     return order;
   }
 
-  async findAllOrders(): Promise<ReturnOrderDTO[]> {
-    const orders = (
-      await this.orderRepository.find({
-        relations: {
-          user: true,
+  async findAllOrders(
+    size: number = this.DEFAULT_PAGE_SIZE,
+    page: number = this.FIRST_PAGE,
+  ): Promise<PaginationDto<ReturnOrderDTO[]>> {
+    page = Number(page) ? page : this.FIRST_PAGE;
+    const take = Number(size) ? size : this.DEFAULT_PAGE_SIZE;
+    const skip = (page - 1) * size;
+
+    const [orders, total] = await this.orderRepository.findAndCount({
+      order: {
+        id: 'ASC' as const,
+      },
+      take,
+      skip,
+      relations: {
+        user: true,
+        ordersProduct: {
+          product: {
+            category: true,
+          },
         },
-      })
-    ).map((order) => new ReturnOrderDTO(order));
+      },
+    });
 
     if (!orders?.length) {
       throw new NotFoundException('Orders not found');
     }
 
-    return orders;
+    return new PaginationDto(
+      new PaginationMeta(size, total, skip + 1, Math.ceil(total / size)),
+      orders.map((order) => new ReturnOrderDTO(order)),
+    );
   }
 
   async findOrdersByUserId(userId?: number, orderId?: number): Promise<ReturnOrderDTO[]> {
@@ -103,7 +125,9 @@ export class OrderService {
             },
           },
           ordersProduct: {
-            product: true,
+            product: {
+              category: true,
+            },
           },
           payment: {
             paymentStatus: true,

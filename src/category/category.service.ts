@@ -12,6 +12,7 @@ import { CategoryEntity } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import { CreateCategory } from './dtos/create-category.dto';
 import { ReturnCategoryDto } from './dtos/return-category.dto';
+import { PaginationDto, PaginationMeta } from 'src/dtos/pagination.dto';
 
 @Injectable()
 export class CategoryService {
@@ -23,18 +24,30 @@ export class CategoryService {
     private readonly productService: ProductService,
   ) {}
 
-  async findAllCategories(isRelations: boolean = false): Promise<ReturnCategoryDto[]> {
-    const relations = {
-      products: isRelations ? true : false,
+  DEFAULT_PAGE_SIZE = 10;
+  FIRST_PAGE = 1;
+
+  async findAllCategories(
+    isRelations: boolean = false,
+    size: number = this.DEFAULT_PAGE_SIZE,
+    page: number = this.FIRST_PAGE,
+  ): Promise<PaginationDto<ReturnCategoryDto[]>> {
+    page = Number(page) ? page : this.FIRST_PAGE;
+    const take = Number(size) ? size : this.DEFAULT_PAGE_SIZE;
+    const skip = (page - 1) * size;
+
+    const findOptions = {
+      order: {
+        id: 'ASC' as const,
+      },
+      take,
+      skip,
+      relations: {
+        products: isRelations,
+      },
     };
 
-    const categories = await this.categoryRepository.find({
-      relations,
-    });
-
-    if (!categories || !categories?.length) {
-      throw new NotFoundException('Categories empty');
-    }
+    const [categories, total] = await this.categoryRepository.findAndCount(findOptions);
 
     const categoryWithCounts = await Promise.all(
       categories.map(async (category) => {
@@ -43,7 +56,10 @@ export class CategoryService {
       }),
     );
 
-    return categoryWithCounts;
+    return new PaginationDto(
+      new PaginationMeta(size, total, skip + 1, Math.ceil(total / size)),
+      categoryWithCounts,
+    );
   }
 
   async findCategoryById(id: number, isRelations: boolean = true): Promise<ReturnCategoryDto> {

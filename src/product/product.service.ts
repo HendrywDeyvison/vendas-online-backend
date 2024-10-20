@@ -110,7 +110,7 @@ export class ProductService {
     isFindRelations: boolean = false,
   ): Promise<PaginationDto<ReturnProductDTO[]>> {
     page = Number(page) ? page : this.FIRST_PAGE;
-    size = Number(size) ? size : this.DEFAULT_PAGE_SIZE;
+    const take = Number(size) ? size : this.DEFAULT_PAGE_SIZE;
     const skip = (page - 1) * size;
     let findOptions = {};
 
@@ -131,7 +131,7 @@ export class ProductService {
       order: {
         id: 'ASC',
       },
-      take: size,
+      take,
       skip,
       relations: {
         category: isFindRelations,

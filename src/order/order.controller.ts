@@ -16,6 +16,7 @@ import { OrderService } from './order.service';
 import { UserId } from '../decorators/user-id-decorator';
 import { ReturnOrderDTO } from './dtos/return-order.dto';
 import { Response } from 'express';
+import { PaginationDto } from 'src/dtos/pagination.dto';
 
 @Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('order')
@@ -46,7 +47,7 @@ export class OrderController {
 
   @Roles(UserType.Admin, UserType.Root)
   @Get('/all')
-  async findAllOrders(): Promise<ReturnOrderDTO[]> {
+  async findAllOrders(): Promise<PaginationDto<ReturnOrderDTO[]>> {
     return await this.orderService.findAllOrders();
   }
 

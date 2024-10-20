@@ -16,6 +16,7 @@ import { Roles } from '../decorators/roles.decorator';
 import { UserType } from '../user/enum/user-type.enum';
 import { CategoryEntity } from './entities/category.entity';
 import { CreateCategory } from './dtos/create-category.dto';
+import { PaginationDto } from 'src/dtos/pagination.dto';
 
 @Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('category')
@@ -23,7 +24,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  async findAllCategories(): Promise<ReturnCategoryDto[]> {
+  async findAllCategories(): Promise<PaginationDto<ReturnCategoryDto[]>> {
     return this.categoryService.findAllCategories();
   }
 

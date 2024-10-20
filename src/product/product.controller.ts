@@ -31,7 +31,7 @@ export class ProductController {
     @Query('size') size: number,
     @Query('page') page: number = 1,
   ): Promise<PaginationDto<ReturnProductDTO[]>> {
-    return this.productService.findAllProductsByParams(productId, productName, size, page, false);
+    return this.productService.findAllProductsByParams(productId, productName, size, page, true);
   }
 
   @Get('/all')
