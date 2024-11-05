@@ -45,6 +45,9 @@ export class ProductService {
     if (isFindRelations) {
       findOptions = {
         ...findOptions,
+        order: {
+          id: 'ASC' as const,
+        },
         relations: {
           category: true,
         },
@@ -128,6 +131,9 @@ export class ProductService {
 
     findOptions = {
       ...findOptions,
+      where: {
+        active: true,
+      },
       order: {
         id: 'ASC',
       },

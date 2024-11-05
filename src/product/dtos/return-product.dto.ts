@@ -10,6 +10,7 @@ export class ReturnProductDTO {
   length: number;
   weight: number;
   diameter: number;
+  active: boolean;
   category?: ReturnCategoryDto;
 
   constructor(productEntity: ProductEntity) {
@@ -22,6 +23,7 @@ export class ReturnProductDTO {
     this.length = productEntity.length;
     this.weight = productEntity.weight;
     this.diameter = productEntity.diameter;
+    this.active = productEntity.active;
     this.category = productEntity.category && new ReturnCategoryDto(productEntity.category);
   }
 }
